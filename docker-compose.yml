@@ -24,10 +24,10 @@ services:
       PORT: ${PORT:-5173}
       HOST: ${HOST:-0.0.0.0}
       # Optional: set an explicit initial admin account. If OVERLORD_PASS is empty,
-      # the server generates one-time bootstrap secrets and stores them in /app/data/save.json.
+      # the server generates one-time bootstrap secrets and stores them in /mnt/data/save.json.
       OVERLORD_USER: ${OVERLORD_USER:-admin}
       OVERLORD_PASS: ${OVERLORD_PASS:-}
-      # Optional overrides. If empty, generated and persisted to /app/data/save.json.
+      # Optional overrides. If empty, generated and persisted to /mnt/data/save.json.
       JWT_SECRET: ${JWT_SECRET:-}
       OVERLORD_AGENT_TOKEN: ${OVERLORD_AGENT_TOKEN:-}
       NODE_ENV: ${NODE_ENV:-production}
@@ -70,9 +70,9 @@ services:
       OVERLORD_TURN_CREDENTIAL_TTL_SECONDS: ${OVERLORD_TURN_CREDENTIAL_TTL_SECONDS:-3600}
     volumes:
       # overlord-data also caches downloaded cross-compile toolchains
-      # under /app/data/toolchains, fetched on first agent build for a
+      # under /mnt/data/toolchains, fetched on first agent build for a
       # given target (mingw, aarch64/armv7/musl, Android NDK, ldid, UPX).
-      - overlord-data:/app/data
+      - overlord-data:/mnt/data
       - overlord-certs:/app/certs
       - overlord-client-build-cache:/app/client-build-cache
       - overlord-plugins:/app/plugins
@@ -106,7 +106,7 @@ services:
     entrypoint: ["/bin/sh", "-ec"]
     command:
       - |
-        for dir in /app/data /app/certs /app/client-build-cache /app/plugins /app/dist-clients; do
+        for dir in /mnt/data /app/certs /app/client-build-cache /app/plugins /app/dist-clients; do
           marker="$$dir/.overlord-uid-1000"
           if [ ! -e "$$marker" ]; then
             chown -R 1000:1000 "$$dir"
@@ -115,7 +115,7 @@ services:
           fi
         done
     volumes:
-      - overlord-data:/app/data
+      - overlord-data:/mnt/data
       - overlord-certs:/app/certs
       - overlord-client-build-cache:/app/client-build-cache
       - overlord-plugins:/app/plugins
